@@ -603,7 +603,7 @@
         iframe.src = url;
     }
 
-   // --- 3. OUVERTURE MODALE (CORRIGÉE : SUPPRESSION "INFO À VENIR" POUR DONNÉES) ---
+   // --- 3. OUVERTURE MODALE (AVEC GRAPHE A DROITE DU TEXTE) ---
     function openModal(key) {
         const d = detailsContent[key];
         if (!d) return;
@@ -623,16 +623,63 @@
 
         // --- CAS 1 : INONDATION ---
         if (key === 'inondation') {
-            html += `<iframe src="https://clem6703.github.io/Inondation/" style="width:100%; height:550px; border:none; border-radius: 12px; margin-bottom: 25px; display:block;"></iframe>`;
+            html += `<iframe src="https://lietheo.github.io/INONDATION/" style="width:100%; height:550px; border:none; border-radius: 12px; margin-bottom: 25px; display:block;"></iframe>`;
             html += `<div class="risk-description" style="border-left-color: ${d.color};">${d.desc}</div>`;
         } 
         
-        // --- CAS 2 : LES FRISES (Mouvement, Nucléaire, Industriel, etc.) ---
+        // --- CAS 2 : LES FRISES & GRAPHES (Mouvement, Nucléaire, Industriel, etc.) ---
         else if (['mouvement', 'nucleaire', 'radon', 'industriel', 'seisme'].includes(key)) {
-            // 1. Texte
-            html += `<div class="risk-description" style="border-left-color: ${d.color}; margin-bottom: 25px;">${d.desc}</div>`;
+            
+            // On vérifie si ce risque possède un graphe à afficher
+            const hasGraph = ['mouvement', 'nucleaire', 'industriel'].includes(key);
 
-            // 2. Frise
+            // 1. BLOC DU HAUT (TEXTE + GRAPHE CÔTE À CÔTE)
+            html += `<div style="display: flex; gap: 40px; align-items: flex-start; margin-bottom: 30px;">`;
+
+                // A. Colonne Texte (à gauche) - Flex 1 pour prendre l'espace restant
+                html += `<div class="risk-description" style="flex: 1; border-left-color: ${d.color}; margin-bottom: 0;">${d.desc}</div>`;
+
+                // B. Colonne Graphe (à droite - Uniquement si le risque en a un)
+                if (hasGraph) {
+                    html += `<div style="width: 450px; flex-shrink: 0;">`; // Largeur fixe pour le graphe
+                    const cardStyle = `background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05);`;
+
+                    // --- Graphique Mouvement ---
+                    if (key === 'mouvement') {
+                        html += `
+                        <div style="${cardStyle}">
+                            <h3 style="font-family:'Space Grotesk'; font-size:1rem; margin:0 0 10px 0; color:${d.color}">Analyse des Mouvements</h3>
+                            <iframe src="https://lietheo.github.io/mouvement_terrain_graph/" style="width:100%; height:350px; border:none; border-radius: 8px;"></iframe>
+                        </div>`;
+                    }
+
+                    // --- Graphique Nucléaire ---
+                    if (key === 'nucleaire') {
+                        html += `
+                        <div style="${cardStyle}">
+                            <h3 style="font-family:'Space Grotesk'; font-size:1rem; margin:0 0 10px 0; color:${d.color}">Répartition INES</h3>
+                            <div style="position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 8px;">
+                                <iframe src="https://latouane512.github.io/diagramme_nucl-aire_INES/" style="position: absolute; top: -50px; left: 0; width: 100%; height: calc(100% + 50px); border:none;"></iframe>
+                            </div>
+                        </div>`;
+                    }
+
+                    // --- Graphique Industriel ---
+                    if (key === 'industriel') {
+                        html += `
+                        <div style="${cardStyle}">
+                            <h3 style="font-family:'Space Grotesk'; font-size:1rem; margin:0 0 10px 0; color:${d.color}">Répartition Seveso</h3>
+                            <iframe src="https://lietheo.github.io/nucleaire_graph/" style="width:100%; height:350px; border:none; border-radius: 8px;"></iframe>
+                        </div>`;
+                    }
+
+                    html += `</div>`; // Fin Colonne Graphe
+                }
+
+            html += `</div>`; // FIN DU BLOC DU HAUT (FLEX)
+
+
+            // 2. LA FRISE CHRONOLOGIQUE (EN DESSOUS, TOUTE LARGEUR)
             html += `
                 <div class="timeline-container">
                     <div class="timeline">
@@ -640,8 +687,10 @@
                         <div class="timeline-progress" id="progress-${key}"></div>
                         <div id="events-list"></div>
                     </div>
-                </div>
-                
+                </div>`;
+
+            // 3. LA BOITE DE DÉTAILS (EN BAS)
+            html += `
                 <div class="details-box" id="details-box" style="border-top-color: ${d.color}; margin-bottom: 30px;">
                     <div class="details-text" id="text-container">
                         <h3 id="d-title" style="color:${d.color}">Sélectionnez une date</h3>
@@ -655,34 +704,6 @@
                     </div>
                     <div class="details-image" id="d-img-container"></div>
                 </div>`;
-
-            // --- 3. GRAPHIQUES BAS DE PAGE ---
-
-            if (key === 'mouvement') {
-                html += `
-                <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px;">
-                    <h3 style="font-family:'Space Grotesk'; font-size:1.2rem; margin-bottom:15px; color:${d.color}">Analyse des Mouvements</h3>
-                    <iframe src="https://latouane512.github.io/Diagramme_mouvement_terrain/" style="width:100%; height:500px; border:none; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></iframe>
-                </div>`;
-            }
-
-            if (key === 'nucleaire') {
-                html += `
-                <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px;">
-                    <h3 style="font-family:'Space Grotesk'; font-size:1.2rem; margin-bottom:15px; color:${d.color}">Répartition par niveau INES</h3>
-                    <div style="position: relative; width: 100%; height: 500px; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                        <iframe src="https://latouane512.github.io/diagramme_nucl-aire_INES/" style="position: absolute; top: -70px; left: 0; width: 100%; height: calc(100% + 70px); border:none;"></iframe>
-                    </div>
-                </div>`;
-            }
-
-            if (key === 'industriel') {
-                html += `
-                <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 30px;">
-                    <h3 style="font-family:'Space Grotesk'; font-size:1.2rem; margin-bottom:15px; color:${d.color}">Répartition des sites Seveso</h3>
-                    <iframe src="https://latouane512.github.io/Diagramme_seveso/" style="width:100%; height:500px; border:none; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></iframe>
-                </div>`;
-            }
         } 
         
         // --- CAS 3 : AUTRES (Données, etc.) ---
@@ -692,7 +713,7 @@
                     ${d.desc}
                 </div>`;
              
-             // CORRECTION ICI : On n'affiche "Information à venir" QUE si ce n'est PAS 'donnees'
+             // On n'affiche "Information à venir" QUE si ce n'est PAS 'donnees'
              if (key !== 'donnees') {
                 html += `<div style="padding:40px; text-align:center;">Information à venir.</div>`;
              }
