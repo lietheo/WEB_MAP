@@ -596,8 +596,8 @@
         document.getElementById('external-frame-container').style.display = 'block';
         document.getElementById('map').style.display = 'none'; 
         
-        // CORRECTION ICI : On pointe vers DEP_NAT-main au lieu du lien Inondation
-        let url = (mode === 'naturel') ? "DEP_NAT-main/index.html" : "DEP_TECH-main/index.html";
+        // CORRECTION ICI : On pointe vers DEP_NAT
+        let url = (mode === 'naturel') ? "DEP_NAT/index.html" : "DEP_TECH/index.html";
         
         if (riskType) url += "#" + riskType;
         iframe.src = url;
