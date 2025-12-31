@@ -659,14 +659,16 @@
                     // --- Graphique Mouvement (VERSION FINALISÉE) ---
                    if (key === 'mouvement') {
                         html += `
-                        <div style="${cardStyle}">
-                            <h3 style="font-family:'Space Grotesk'; font-size:1.2rem; margin:0 0 10px 0; color:${d.color}">
-                                Analyse des Mouvements
+                        <div style="${cardStyle}; min-height: 420px; justify-content: flex-start;">
+                            <h3 style="font-family:'Space Grotesk'; font-size:1.1rem; margin:10px 0; color:${d.color}">
+                                Répartition des types de mouvements
                             </h3>
-                            <iframe src="https://lietheo.github.io/mouvement_terrain_graph/" 
-                                    scrolling="no" 
-                                    style="width:100%; height:450px; border:none; overflow:hidden; transform: scale(1.2); transform-origin: top center;">
-                            </iframe>
+                            <div style="width: 100%; height: 350px; overflow: visible; display: flex; justify-content: center; align-items: center;">
+                                <iframe src="https://lietheo.github.io/mouvement_terrain_graph/" 
+                                        scrolling="no" 
+                                        style="width: 350px; height: 350px; border:none; transform: scale(1.3); transform-origin: center center; pointer-events: auto;">
+                                </iframe>
+                            </div>
                         </div>`;
                     }
 
