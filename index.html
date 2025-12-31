@@ -522,56 +522,69 @@
     color: "#4B5563", 
     icon: "fa-database",
     desc: `
-        <div style="font-family: 'Inter', sans-serif; color: #374151; padding: 10px;">
+        <div style="font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.6; color: #374151; padding: 10px;">
+            <h3 style="font-family: 'Space Grotesk'; font-size: 1.4rem; margin-bottom: 15px; color: #111827;">MÉTADONNÉE – Données Risques Naturels et Technologiques</h3>
             
-            <div style="margin-bottom: 25px;">
-                <h4 style="color: #2563EB; font-family: 'Space Grotesk'; font-size: 1.1rem; margin-bottom: 8px;">1. Résumé</h4>
-                <p style="background: #f8fafc; padding: 15px; border-radius: 12px; border-left: 5px solid #4B5563; margin: 0; line-height: 1.6;">
-                    Ensemble de données utilisé pour analyser l’évolution des séismes, mouvements de terrain, inondations, accidents industriels, incidents nucléaires et informations sur le radon.
-                </p>
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; border-left: 4px solid #4B5563; margin-bottom: 25px;">
+                <strong>1. Résumé :</strong> Ensemble de données utilisées pour analyser l’évolution des séismes, mouvements de terrain, inondations, accidents industriels, incidents nucléaires et informations sur le radon.
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <h4 style="color: #2563EB; font-family: 'Space Grotesk'; font-size: 1.1rem; margin-bottom: 8px;">2. Zone Géographique</h4>
-                <p style="margin: 0; padding-left: 5px;">France métropolitaine.</p>
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #2563EB; font-family: 'Space Grotesk'; border-bottom: 1px solid #eee; padding-bottom: 5px;">2. Zone Géographique</h4>
+                <p style="margin: 5px 0 0 5px;">France métropolitaine.</p>
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <h4 style="color: #2563EB; font-family: 'Space Grotesk'; font-size: 1.1rem; margin-bottom: 8px;">3. Formats d’origine</h4>
-                <p style="margin: 0; padding-left: 5px; color: #6B7280;">CSV, XLSX, GEOJSON/JSON, SHP, GPKG, PDF, HTML.</p>
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #2563EB; font-family: 'Space Grotesk'; border-bottom: 1px solid #eee; padding-bottom: 5px;">3. Formats d’origine</h4>
+                <p style="margin: 5px 0 0 5px;">CSV, XLSX, GEOJSON/JSON, SHP, GPKG, PDF, HTML.</p>
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <h4 style="color: #2563EB; font-family: 'Space Grotesk'; font-size: 1.1rem; margin-bottom: 8px;">4. Sources des Données</h4>
-                <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <li style="padding: 8px; background: #fff; border: 1px solid #eee; border-radius: 8px;"><strong>Séismes :</strong> Sisfrance.net</li>
-                    <li style="padding: 8px; background: #fff; border: 1px solid #eee; border-radius: 8px;"><strong>Mouvements :</strong> SDES</li>
-                    <li style="padding: 8px; background: #fff; border: 1px solid #eee; border-radius: 8px;"><strong>Accidents :</strong> ARIA / ASNR</li>
-                    <li style="padding: 8px; background: #fff; border: 1px solid #eee; border-radius: 8px;"><strong>Radon :</strong> IRSN / GéoRisques</li>
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #2563EB; font-family: 'Space Grotesk'; border-bottom: 1px solid #eee; padding-bottom: 5px;">4. Sources des Données</h4>
+                <ul style="list-style: none; padding: 0; margin: 10px 0 0 5px;">
+                    <li style="margin-bottom: 8px;"><strong>Séismes :</strong> <a href="https://www.sisfrance.net/seismes" target="_blank" style="color:#2563EB; text-decoration:none;">sisfrance.net/seismes</a></li>
+                    <li style="margin-bottom: 8px;"><strong>Mouvements :</strong> <a href="https://www.donnees.statistiques.developpement-durable.gouv.fr" target="_blank" style="color:#2563EB; text-decoration:none;">statistiques.developpement-durable.gouv.fr</a></li>
+                    <li style="margin-bottom: 8px;"><strong>Accidents industriels (ARIA) :</strong> <a href="https://www.aria.developpement-durable.gouv.fr" target="_blank" style="color:#2563EB; text-decoration:none;">aria.developpement-durable.gouv.fr</a></li>
+                    <li style="margin-bottom: 8px;"><strong>Incidents nucléaires (ASNR) :</strong> <a href="https://reglementation-controle.asnr.fr" target="_blank" style="color:#2563EB; text-decoration:none;">reglementation-controle.asnr.fr</a></li>
+                    <li style="margin-bottom: 8px;"><strong>Radon :</strong><br>
+                        - <a href="https://sante.gouv.fr" target="_blank" style="color:#2563EB; text-decoration:none;">sante.gouv.fr</a><br>
+                        - <a href="https://www.georisques.gouv.fr" target="_blank" style="color:#2563EB; text-decoration:none;">georisques.gouv.fr</a><br>
+                        - <a href="https://recherche-expertise.asnr.fr" target="_blank" style="color:#2563EB; text-decoration:none;">recherche-expertise.asnr.fr</a>
+                    </li>
+                    <li style="margin-bottom: 8px;"><strong>Inondations :</strong> <a href="https://www.georisques.gouv.fr/consulter-les-dossiers-thematiques/dossier-expert-sur-les-inondations" target="_blank" style="color:#2563EB; text-decoration:none;">Dossier Expert Géorisques</a></li>
+                    <li style="margin-bottom: 8px;"><strong>Global :</strong> <a href="https://www.observatoire-des-territoires.gouv.fr/outils/cartographie-interactive" target="_blank" style="color:#2563EB; text-decoration:none;">Observatoire des Territoires</a></li>
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #2563EB; font-family: 'Space Grotesk';">Géométries & Référentiels</h4>
+                <ul style="list-style: none; padding: 0; margin: 5px 0 0 5px;">
+                    <li><a href="https://geoservices.ign.fr/adminexpress" target="_blank" style="color:#2563EB; text-decoration:none;">IGN AdminExpress</a></li>
+                    <li><a href="https://www.insee.fr/fr/information/4802589" target="_blank" style="color:#2563EB; text-decoration:none;">INSEE</a></li>
+                    <li><a href="https://www.data.gouv.fr/datasets/bd-topage-r/" target="_blank" style="color:#2563EB; text-decoration:none;">BD TOPAGE</a></li>
                 </ul>
             </div>
 
             <div style="margin-bottom: 25px;">
-                <h4 style="color: #2563EB; font-family: 'Space Grotesk'; font-size: 1.1rem; margin-bottom: 8px;">5. Traitements effectués</h4>
-                <div style="background: white; border: 1px solid #e5e7eb; padding: 15px; border-radius: 16px;">
-                    <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem; line-height: 1.6;">
-                        <li>Nettoyage des données (doublons, formats, dates)</li>
-                        <li>Harmonisation des champs & Calcul des centroïdes</li>
-                        <li>Géoréférencement / projection en WGS84</li>
-                        <li>Production de statistiques et graphiques temporels</li>
-                    </ul>
-                </div>
+                <h4 style="margin-top: 0; color: #2563EB; font-family: 'Space Grotesk'; border-bottom: 1px solid #eee; padding-bottom: 5px;">5. Traitements effectués</h4>
+                <ul style="margin: 10px 0 0 20px; padding: 0;">
+                    <li>Téléchargement des données</li>
+                    <li>Nettoyage (doublons, formats, dates)</li>
+                    <li>Harmonisation des champs & Calcul des centroïdes</li>
+                    <li>Jointure aux géométries</li>
+                    <li>Géoréférencement / projection en WGS84</li>
+                    <li>Production de statistiques et graphiques temporels</li>
+                </ul>
             </div>
 
-            <div style="display: flex; gap: 15px; margin-top: 30px;">
-                <div style="flex: 1; background: #eef2ff; padding: 15px; border-radius: 12px; border: 1px solid #dbeafe;">
-                    <small style="display: block; text-transform: uppercase; color: #6366f1; font-weight: 700; font-size: 0.7rem; margin-bottom: 5px;">6. Système de coordonnées</small>
-                    <span style="font-weight: 600;">EPSG:4326 (WGS84)</span>
-                </div>
-                <div style="flex: 1; background: #f0fdf4; padding: 15px; border-radius: 12px; border: 1px solid #dcfce7;">
-                    <small style="display: block; text-transform: uppercase; color: #16a34a; font-weight: 700; font-size: 0.7rem; margin-bottom: 5px;">7. Date d’accès</small>
-                    <span style="font-weight: 600;">01/01/2026 (Prévisionnel)</span>
-                </div>
+            <div style="background: #eef2ff; padding: 15px; border-radius: 8px; margin-top: 25px; border: 1px solid #dbeafe;">
+                <p style="margin: 0;"><strong>6. Système de coordonnées :</strong> EPSG:4326 (WGS84)</p>
+                <p style="margin: 5px 0 0 0;"><strong>7. Date d’accès :</strong> 01/01/2026 (Prévisionnel)</p>
+            </div>
+
+            <div style="margin-top: 25px;">
+                <h4 style="margin-top: 0; color: #2563EB; font-family: 'Space Grotesk';">8. Usage</h4>
+                <p style="margin: 5px 0 0 5px;">Alimentation d’un site internet présentant : graphiques temporels, statistiques, cartes thématiques et documentation des risques.</p>
             </div>
         </div>`
 }
