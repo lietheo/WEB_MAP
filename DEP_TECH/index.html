@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Carte des Risques Technologiques</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================
+           1. CHARTE GRAPHIQUE & VARIABLES CSS
+           ========================================== */
+        :root {
+            /* Couleurs structurelles */
+            --primary-text: #2c3e50;
+            --secondary-text: #7f8c8d;
+            --bg-color: #f0f2f5;
+            
+            /* Code couleurs thématique (Risques) */
+            --col-nucleaire: #E6C229; /* Jaune Signalétique */
+            --col-indus: #7E7973;     /* Gris Industriel */
+            --col-seveso: #6B8E23;    /* Vert Olive / Chimique */
+        }
+
+        /* Reset & Base */
+        body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; display: flex; height: 100vh; overflow: hidden; background: var(--bg-color); color: #333; }
+        * { box-sizing: border-box; }
+
+        /* ==========================================
+           2. LAYOUT PRINCIPAL (Flexbox)
+           ========================================== */
+        #layout-container { display: flex; width: 100%; height: 100%; }
+
+        /* ==========================================
+           3. SIDEBAR (PANNEAU LATÉRAL)
+           ========================================== */
+        .sidebar {
+            width: 380px; 
+            background: white; 
+            z-index: 1000; 
+            box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+            display: flex; 
+            flex-direction: column; 
+            padding: 30px; 
+            overflow-y: auto; /* Scroll si contenu trop long */
+            flex-shrink: 0; 
+        }
+
+        /* En-tête */
+        .sidebar-header { margin-bottom: 30px; }
+        .sidebar-title {
+            font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--primary-text);
+            margin: 0 0 10px 0; letter-spacing: -0.5px; line-height: 1.2;
+        }
+        .sidebar-subtitle { font-size: 0.95rem; color: var(--secondary-text); line-height: 1.5; }
+
+        /* --- Composant : Sélecteur de Risques --- */
+        .risk-selector { display: flex; flex-direction: column; gap: 12px; }
+        
+        .risk-item {
+            display: flex; align-items: center; padding: 12px 15px; border-radius: 12px;
+            background: #f8f9fa; border: 2px solid transparent; cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        /* États Interactifs (Hover & Active) */
+        .risk-item:hover { background: #eef2f5; transform: translateX(5px); }
+        .risk-item.active { 
+            background: white; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+        }
+
+        /* Coloration dynamique des bordures à l'état actif */
+        .risk-item[data-risk="nucleaire"].active { border-color: var(--col-nucleaire); }
+        .risk-item[data-risk="industriel"].active { border-color: var(--col-indus); }
+        .risk-item[data-risk="seveso"].active { border-color: var(--col-seveso); }
+
+        /* Icônes */
+        .risk-icon { 
+            width: 36px; height: 36px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; font-size: 1.1rem; color: white; flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .risk-name { font-weight: 600; color: var(--primary-text); font-size: 0.95rem; }
+
+        /* Application des variables CSS aux fonds d'icônes */
+        .risk-item[data-risk="nucleaire"] .risk-icon { background: var(--col-nucleaire); }
+        .risk-item[data-risk="industriel"] .risk-icon { background: var(--col-indus); }
+        .risk-item[data-risk="seveso"] .risk-icon { background: var(--col-seveso); }
+
+        /* --- Composant : Légende Dynamique --- */
+        .legend-container { 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid #eee; 
+        }
+        .legend-title { 
+            font-size: 0.8rem; text-transform: uppercase; color: #aaa; 
+            font-weight: 700; margin-bottom: 15px; letter-spacing: 1px; 
+        }
+        .legend-row { display: flex; align-items: center; margin-bottom: 12px; color: #555; font-size: 0.9rem; }
+        .legend-circle { 
+            border-radius: 50%; display: inline-block; margin-right: 12px; 
+            border: 1px solid rgba(0,0,0,0.1); flex-shrink: 0;
+        }
+
+        /* --- Composant : Accordéon (Bas de page) --- */
+        .details-wrapper { margin-top: auto; padding-top: 20px; }
+        
+        .details-toggle {
+            padding: 12px; text-align: center; color: var(--secondary-text); 
+            cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            border-radius: 8px; background: #f9f9f9;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.2s;
+        }
+        .details-toggle:hover { background: #e0e0e0; color: var(--primary-text); }
+        
+        .details-panel {
+            display: none; 
+            background: #fff; padding: 15px; border-radius: 8px; 
+            font-size: 0.85rem; color: #666; margin-top: 10px; line-height: 1.6;
+            border: 1px solid #eee;
+        }
+        .details-panel.open { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ==========================================
+           4. CARTE & POPUPS
+           ========================================== */
+        #map { flex: 1; height: 100%; z-index: 1; background: #e5e9ec; }
+
+        /* Surcharge des styles Leaflet par défaut pour moderniser les popups */
+        .leaflet-popup-content-wrapper { 
+            border-radius: 12px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important; padding: 0 !important; overflow: hidden; 
+        }
+        .leaflet-popup-content { margin: 0 !important; width: 260px !important; }
+        .leaflet-container a.leaflet-popup-close-button { color: white !important; top: 10px; right: 10px; font-size: 18px; }
+
+        /* Contenu HTML injecté dans la popup */
+        .custom-popup-header { background: #333; color: white; padding: 15px; font-family: 'Montserrat'; font-size: 1rem; font-weight: 700; }
+        .custom-popup-body { padding: 15px; background: white; }
+        .popup-stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #555; }
+        .popup-stat-val { font-weight: 700; color: #222; }
+
+    </style>
+</head>
+<body>
+
+    <div id="layout-container">
+        
+        <div class="sidebar">
+            
+            <div class="sidebar-header">
+                <div class="sidebar-title">Risques Tech.</div>
+                <div class="sidebar-subtitle">
+                    Visualisez l'intensité des aléas technologiques par département (nombre de communes concernées).
+                </div>
+            </div>
+
+            <div class="risk-selector">
+                <div class="risk-item active" onclick="changeRisk('nucleaire')" data-risk="nucleaire">
+                    <div class="risk-icon"><i class="fa-solid fa-radiation"></i></div>
+                    <div class="risk-name">Nucléaire</div>
+                </div>
+                <div class="risk-item" onclick="changeRisk('industriel')" data-risk="industriel">
+                    <div class="risk-icon"><i class="fa-solid fa-industry"></i></div>
+                    <div class="risk-name">Industriel</div>
+                </div>
+                <div class="risk-item" onclick="changeRisk('seveso')" data-risk="seveso">
+                    <div class="risk-icon"><i class="fa-solid fa-flask"></i></div>
+                    <div class="risk-name">Seveso</div>
+                </div>
+            </div>
+
+            <div class="legend-container" id="legend-content"></div>
+
+            <div class="details-wrapper">
+                <div class="details-toggle" onclick="toggleDetails()">
+                    <span><i class="fa-solid fa-circle-info"></i> Comprendre les données</span>
+                    <i class="fa-solid fa-chevron-down" id="chevron-icon"></i>
+                </div>
+                <div class="details-panel" id="details-text">
+                    <p><strong>Source :</strong> Observatoire des Territoires.</p>
+                    <p>Les données indiquent le nombre de communes par département exposées à un risque technologique majeur (PPRT, installations Seveso seuil haut/bas, centrales nucléaires).</p>
+                    <p>La taille du cercle est proportionnelle au nombre de communes impactées.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="map"></div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="CENTROIDE.json"></script> 
+
+    <script>
+        // ==========================================
+        // CONFIGURATION DES DONNÉES
+        // ==========================================
+        // Mapping entre les clés d'interface et les champs du fichier JSON
+        const CONFIG = {
+            'nucleaire': { 
+                label: 'Nucléaire', 
+                color: '#E6C229', 
+                field: 'Nucléaire', // Correspondance exacte avec le JSON
+                max: 100            // Valeur max pour étalonnage de l'échelle
+            },
+            'industriel': { 
+                label: 'Industriel', 
+                color: '#7E7973', 
+                field: 'Risque_ind', 
+                max: 300 
+            },
+            'seveso': { 
+                label: 'Seveso', 
+                color: '#6B8E23', 
+                field: 'Seveso 202', 
+                max: 80 
+            }
+        };
+
+        // Variables globales
+        let map;
+        let currentGeoJsonLayer = null; // Stocke la couche active pour pouvoir la supprimer
+        let activeRiskKey = 'nucleaire';
+
+        // ==========================================
+        // INITIALISATION DE L'APPLICATION
+        // ==========================================
+        function initMap() {
+            // Vérification de l'intégrité des données avant chargement
+            if (typeof centroide === 'undefined') {
+                console.error("Erreur critique : Fichier de données CENTROIDE.json manquant.");
+                alert("Erreur: Les données n'ont pas pu être chargées.");
+                return;
+            }
+
+            // Création de l'instance de carte (Centrée sur la France)
+            map = L.map('map', { zoomControl: false }).setView([46.6, 2.5], 6);
+            
+            // Ajout du fond de carte (Basemap CartoDB Positron - Style épuré)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Repositionnement du contrôle de zoom
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            // Chargement initial du risque par défaut
+            loadRiskLayer('nucleaire');
+        }
+
+        // ==========================================
+        // GESTION DES INTERACTIONS (UI)
+        // ==========================================
+        
+        /**
+         * Change le type de risque affiché sur la carte
+         * @param {string} riskKey - La clé du risque (ex: 'nucleaire')
+         */
+        function changeRisk(riskKey) {
+            activeRiskKey = riskKey;
+
+            // 1. Mise à jour visuelle des boutons (Classe CSS .active)
+            document.querySelectorAll('.risk-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.risk-item[data-risk="${riskKey}"]`).classList.add('active');
+
+            // 2. Rechargement de la couche de données
+            loadRiskLayer(riskKey);
+        }
+
+        // ==========================================
+        // LOGIQUE CARTOGRAPHIQUE (CORE)
+        // ==========================================
+
+        /**
+         * Charge et affiche la couche GeoJSON correspondante
+         */
+        function loadRiskLayer(key) {
+            // Nettoyage de la couche précédente si elle existe
+            if (currentGeoJsonLayer) map.removeLayer(currentGeoJsonLayer);
+
+            const conf = CONFIG[key];
+
+            // Création de la nouvelle couche GeoJSON
+            currentGeoJsonLayer = L.geoJSON(centroide, {
+                
+                // Filtre : On ne garde que les départements ayant une valeur > 0
+                filter: function(feature) {
+                    return (feature.properties[conf.field] || 0) > 0;
+                },
+                
+                // Transformation : Point -> Cercle proportionnel (CircleMarker)
+                pointToLayer: function(feature, latlng) {
+                    const val = feature.properties[conf.field] || 0;
+                    const radius = calculateRadius(val, conf.max);
+                    
+                    return L.circleMarker(latlng, {
+                        radius: radius,
+                        fillColor: conf.color,
+                        color: 'white', // Contour blanc
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+                
+                // Comportement pour chaque élément (Popup + Events)
+                onEachFeature: function(feature, layer) {
+                    const p = feature.properties;
+                    const val = p[conf.field] || 0;
+
+                    // Construction du HTML de la Popup
+                    const popupContent = `
+                        <div class="custom-popup-header" style="background:${conf.color}">
+                            ${p.nom} (${p.code_insee})
+                        </div>
+                        <div class="custom-popup-body">
+                            <div class="popup-stat-row">
+                                <span>Type de risque :</span> <strong>${conf.label}</strong>
+                            </div>
+                            <div class="popup-stat-row">
+                                <span>Communes touchées :</span> <span class="popup-stat-val" style="color:${conf.color}">${val}</span>
+                            </div>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+
+                    // Gestion des événements souris (Survol)
+                    layer.on({
+                        mouseover: function(e) {
+                            var l = e.target;
+                            l.setStyle({ weight: 3, color: '#333', fillOpacity: 1 }); // Mise en avant
+                            l.openPopup();
+                        },
+                        mouseout: function(e) {
+                            var l = e.target;
+                            l.setStyle({ weight: 1, color: 'white', fillOpacity: 0.8 }); // Retour normal
+                            l.closePopup();
+                        }
+                    });
+                }
+            }).addTo(map);
+
+            // Mise à jour de la légende associée
+            updateLegend(key);
+        }
+
+        // ==========================================
+        // FONCTIONS UTILITAIRES & CALCULS
+        // ==========================================
+
+        /**
+         * Calcule le rayon du cercle en fonction de la valeur
+         * Formule linéaire simple pour la proportionnalité
+         */
+        function calculateRadius(val, max) {
+            if(!val) return 0;
+            const minPx = 4;  // Rayon minimum en pixels
+            const maxPx = 35; // Rayon maximum en pixels
+            
+            // Produit en croix
+            let r = minPx + (val / max) * (maxPx - minPx);
+            return r;
+        }
+
+        /**
+         * Génère dynamiquement le HTML de la légende
+         */
+        function updateLegend(key) {
+            const conf = CONFIG[key];
+            const max = conf.max;
+            // Définition des paliers de légende (Max, Moyen, Petit)
+            const steps = [Math.round(max), Math.round(max/2), 5];
+            
+            let html = `<div class="legend-title">Légende : ${conf.label}</div>`;
+            
+            steps.forEach(val => {
+                const r = calculateRadius(val, max) * 2; // Conversion rayon -> diamètre pour CSS
+                html += `
+                    <div class="legend-row">
+                        <span class="legend-circle" style="width:${r}px; height:${r}px; background:${conf.color}; opacity:0.8;"></span>
+                        <span>~ ${val} Communes</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('legend-content').innerHTML = html;
+        }
+
+        /**
+         * Gestion de l'ouverture/fermeture du panneau d'info
+         */
+        function toggleDetails() {
+            const panel = document.getElementById('details-text');
+            const icon = document.getElementById('chevron-icon');
+            
+            if (panel.style.display === "block") {
+                panel.style.display = "none";
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                panel.style.display = "block";
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        }
+
+        // Démarrage de l'application au chargement de la page
+        window.onload = initMap;
+
+    </script>
+
+</body>
+</html>
