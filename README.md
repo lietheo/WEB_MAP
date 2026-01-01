@@ -21,10 +21,11 @@ L'**Observatoire National des Risques (ONR)** est une plateforme web interactive
 ### 2. Pages Thématiques Détaillées
 Chaque risque (Inondation, Séisme, Nucléaire, Mouvements de Terrain, Radon, Industriel) est documenté par :
 * **Synthèses réglementaires :** Descriptions des aléas et outils de prévention (PPRI, PPRT, Eurocode 8).
-* **Chronologies Graphiques :** Frises historiques des événements majeurs (ex: AZF, Lubrizol) et des évolutions de la loi.
+* **Chronologies Graphiques :** Frises historiques des événements majeurs et des évolutions de la loi.
 * **Analyses Statistiques :** Graphiques de répartition (ex: Échelle INES, Accidentologie par secteur).
 
 ## Métadonnées et Sûreté des Données
 Les données sont issues de sources officielles (Sisfrance, ARIA, Géorisques, IRSN) et traitées pour garantir une précision géographique optimale :
 * **Projection :** WGS84 (EPSG:4326).
-* **Processus :** Nettoyage, harmonisation des champs et jointures aux référentiels IGN AdminExpress.
+
+* **Processus :** Nettoyage, harmonisation des champs et jointures aux référentiels.
