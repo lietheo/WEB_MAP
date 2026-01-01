@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exposition Inondations & Chronologie</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <style>
+        /* * ============================================================
+         * 1. CHARTE GRAPHIQUE & VARIABLES CSS
+         * ============================================================
+         */
+        :root {
+            --color-primary: #5C7689; 
+            --color-active: #c0392b; /* Rouge signalétique pour les zones à risque */
+            --color-line: #5C7689;
+            --color-bg: #f5f8fb;
+            --shadow-card: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+            background-color: var(--color-bg);
+            overflow-x: hidden; 
+        }
+
+        /* * ============================================================
+         * 2. CONTENEUR CARTOGRAPHIQUE
+         * ============================================================
+         */
+        #map { 
+            height: 100vh; 
+            width: 100%; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+
+        /* * ============================================================
+         * 3. ÉLÉMENTS D'INTERFACE (UI)
+         * ============================================================
+         */
+
+        /* --- Titre principal flottant --- */
+        #map-title {
+            position: absolute;
+            top: 15px; 
+            left: 50%;
+            transform: translateX(-50%); /* Centrage horizontal parfait */
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 30px; 
+            border-radius: 50px;
+            box-shadow: var(--shadow-card);
+            text-align: center;
+            border: 1px solid #ddd;
+            width: auto;
+            max-width: 70%; /* Limite la largeur pour l'ergonomie */
+        }
+        
+        #map-title h1 { 
+            margin: 0; 
+            font-size: 18px; 
+            color: #c0392b; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            line-height: 1.5; /* Hauteur de ligne ajustée pour éviter la coupure du texte */
+        }
+        
+        #map-title p { 
+            margin: 5px 0 0 0; 
+            font-size: 12px; 
+            color: #7f8c8d; 
+        }
+
+        /* --- Ajustement du conteneur Leaflet Droit (Contrôles & Info) --- */
+        /* Décalage vertical important (140px) pour éviter le chevauchement avec le titre */
+        .leaflet-top.leaflet-right {
+            margin-top: 140px; 
+        }
+
+        /* --- Panneau d'information contextuel (Hover) --- */
+        .info {
+            padding: 15px;
+            font: 13px/16px Arial, Helvetica, sans-serif;
+            background: rgba(255,255,255,0.98);
+            box-shadow: var(--shadow-card);
+            border-radius: 6px;
+            min-width: 280px;
+        }
+        .info h4 { 
+            margin: 0 0 10px; 
+            color: #333; 
+            font-size: 15px; 
+            border-bottom: 2px solid var(--color-active); 
+            padding-bottom: 5px; 
+            text-transform: uppercase; 
+        }
+
+        /* Styles tabulaires pour les données */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .data-table th { text-align: left; color: #777; font-size: 0.85em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .data-table td { padding: 5px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.95em; }
+        
+        /* Indicateurs visuels (Couleurs valeurs) */
+        .val-zi { color: var(--color-active); font-weight: 700; }
+        .val-hors { color: #2d3436; }
+
+        /* --- Légende --- */
+        .legend { 
+            line-height: 22px; 
+            color: #555; 
+            background: rgba(255,255,255,0.95); 
+            padding: 12px; 
+            border-radius: 5px; 
+            box-shadow: var(--shadow-card); 
+        }
+        .legend i { 
+            width: 18px; 
+            height: 18px; 
+            float: left; 
+            margin-right: 8px; 
+            opacity: 0.9; 
+            border: 1px solid #ccc; 
+        }
+        
+        /* Personnalisation du contrôleur de couches Leaflet */
+        .leaflet-control-layers { 
+            box-shadow: var(--shadow-card); 
+            border-radius: 8px; 
+            border: none;
+            padding: 5px;
+        }
+
+        /* * ============================================================
+         * 4. COMPOSANT MODAL (Pop-up méthodologie)
+         * ============================================================
+         */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
+        .modal-content { background-color: #fefefe; margin: 8% auto; padding: 30px; border: 1px solid #888; width: 90%; max-width: 650px; border-radius: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); line-height: 1.6; }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+        .close-btn:hover { color: #333; }
+        .modal-content h2 { margin-top: 0; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 15px; display: inline-block; }
+        .modal-content a { color: #3498db; text-decoration: none; font-weight: 500; }
+        .modal-content a:hover { text-decoration: underline; }
+
+        /* Bouton d'aide personnalisé "?" */
+        .leaflet-control-custom-info { 
+            background: white; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 4px; 
+            box-shadow: 0 1px 5px rgba(0,0,0,0.65); 
+            cursor: pointer; 
+            text-align: center; 
+            line-height: 32px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            color: #555; 
+            transition: background 0.2s;
+        }
+        .leaflet-control-custom-info:hover { background: #f0f0f0; color: #000; }
+        
+    </style>
+</head>
+<body>
+
+<div id="map-title">
+    <h1>Représentation des unités urbaines soumises à un risque d'inondation</h1>
+    <p>Comparaison socio-démographique (1999 - 2017)</p>
+</div>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>Méthodologie & Sources</h2>
+        <p>Indicateurs de vulnérabilité sociale par unité urbaine et par année (1999, 2008 et 2017) en France métropolitaine, basés sur l'exposition à l'aléa inondation.</p>
+        
+        <p><strong>Définition de l'aléa :</strong> Identifié via la cartographie des Territoires à Risque important d'Inondation (BD TRI), rapportage 2020 (v2), scénario moyen (~crue centennale).<br>
+        <a href="https://www.georisques.gouv.fr/donnees/bases-de-donnees/zonages-inondation-rapportage-2020" target="_blank">Accès source Géorisques</a></p>
+        
+        <p><strong>Variables socio-démographiques analysées :</strong></p>
+        <ul>
+            <li>Taux de chômage (PCT_CHOM)</li>
+            <li>Part de la population étrangère (PCT_ETR)</li>
+            <li>Part des ménages propriétaires (PCT_PROP)</li>
+        </ul>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 0.9em; color: #666;">
+            <em>Données issues des travaux de Fujiki & Finance (2022).<br>
+            <a href="https://doi.org/10.4000/cybergeo.39179" target="_blank">Consulter l'article de recherche (Cybergeo)</a></em>
+        </p>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<script type="text/javascript" src="inondation_1999_wgs84.json"></script>
+<script type="text/javascript" src="inondation_2008_wgs84.json"></script>
+<script type="text/javascript" src="inondation_2017_wgs84.json"></script>
+<script type="text/javascript" src="cours_eau.json"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    /**
+     * ============================================================
+     * LOGIQUE APPLICATIVE - CARTOGRAPHIE INTERACTIVE
+     * ============================================================
+     */
+
+    // --- 1. INITIALISATION DE LA CARTE & FONDS ---
+    
+    // Fonds de carte : Satellite & Plan Gris
+    const basemapSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 18
+    });
+    
+    const basemapGris = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CARTO',
+        maxZoom: 19
+    });
+
+    // Instanciation de l'objet Map
+    const map = L.map('map', {
+        center: [46.6, 2.5], // Centrage France
+        zoom: 6,
+        layers: [basemapGris] // Fond par défaut
+    });
+
+    // Ajout de l'échelle métrique
+    L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(map);
+
+
+    // --- 2. CONTRÔLE PERSONNALISÉ (BOUTON INFO) ---
+    const InfoControl = L.Control.extend({
+        options: { position: 'topleft' },
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom-info');
+            container.innerHTML = '?'; 
+            container.title = "Détails méthodologiques";
+            container.onclick = (e) => {
+                L.DomEvent.stopPropagation(e);
+                document.getElementById("infoModal").style.display = "block";
+            };
+            return container;
+        }
+    });
+    map.addControl(new InfoControl());
+
+    // Gestionnaire de la Modal
+    function closeModal() {
+        document.getElementById("infoModal").style.display = "none";
+    }
+    window.onclick = function(event) {
+        const modal = document.getElementById("infoModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+
+    // --- 3. GESTION DES DONNÉES & STYLES ---
+
+    /**
+     * Détermine la couleur choroplèthe en fonction du taux d'exposition
+     * @param {number} d - Pourcentage d'exposition (0-1)
+     */
+    function getColor(d) {
+        return d > 0.50 ? '#800026' : 
+               d > 0.25 ? '#BD0026' : 
+               d > 0.15 ? '#E31A1C' : 
+               d > 0.10 ? '#FC4E2A' : 
+               d > 0.05 ? '#FD8D3C' : 
+               d > 0.02 ? '#FEB24C' : 
+               d > 0    ? '#FFEDA0' : '#CCCCCC'; 
+    }
+
+    // Formateur de pourcentage pour l'affichage
+    function formatPct(val) {
+        if (val === null || val === undefined) return '<span style="color:#ccc">N/A</span>';
+        return (val * 100).toFixed(1) + '%';
+    }
+
+    // Style par défaut des polygones
+    function style(feature) {
+        return {
+            fillColor: getColor(feature.properties.PCT_EXPO),
+            weight: 0.5,        
+            opacity: 1,
+            color: '#333',      
+            fillOpacity: 0.75
+        };
+    }
+
+    // Style linéaire (Cours d'eau)
+    const styleEau = { color: "#4FC3F7", weight: 1, opacity: 0.8 };
+    
+    // Chargement sécurisé de la couche Eau
+    let layerEau;
+    try {
+        if (typeof EAU !== 'undefined') {
+            layerEau = L.geoJSON(EAU, { style: styleEau, interactive: false });
+            layerEau.addTo(map);
+        }
+    } catch(err) {
+        console.warn("Données hydrographiques non chargées.");
+    }
+
+
+    // --- 4. INTERACTIVITÉ & PANNEAU D'INFORMATION ---
+
+    const info = L.control();
+    
+    info.onAdd = function (map) { 
+        this._div = L.DomUtil.create('div', 'info'); 
+        this.update(); 
+        return this._div; 
+    };
+
+    // Mise à jour du panneau lors du survol
+    info.update = function (props) {
+        if (props) {
+            const pop = props.POP_ZI !== null ? Math.round(props.POP_ZI) : 0;
+            const html = `
+                <h4>${props.libuu2020} (${props.annee})</h4>
+                <b>Exposition : ${formatPct(props.PCT_EXPO)} de la population.</b><br>
+                <span style="color:#777; font-size:0.9em">${pop.toLocaleString()} habitants en zone inondable (ZI)</span>
+                
+                <table class="data-table">
+                    <tr><th>Indicateur</th><th>En ZI</th><th>Hors ZI</th></tr>
+                    <tr><td>Propriétaires</td><td class="val-zi">${formatPct(props.PCT_PROP_Z)}</td><td class="val-hors">${formatPct(props.PCT_PROP_H)}</td></tr>
+                    <tr><td>Étrangers</td><td class="val-zi">${formatPct(props.PCT_ETR_ZI)}</td><td class="val-hors">${formatPct(props.PCT_ETR_HO)}</td></tr>
+                    <tr><td>Chômage</td><td class="val-zi">${formatPct(props.PCT_CHOM_Z)}</td><td class="val-hors">${formatPct(props.PCT_CHOM_H)}</td></tr>
+                </table>
+                <br><small style="color:#999; font-style:italic;">Survolez une zone pour actualiser</small>
+            `;
+            this._div.innerHTML = html;
+        } else {
+            this._div.innerHTML = '<h4>Informations Unité Urbaine</h4><p style="color:#666">Survolez une unité urbaine ! </p>';
+        }
+    };
+    info.addTo(map);
+
+    // Gestionnaires d'événements souris
+    function highlightFeature(e) {
+        const layer = e.target;
+        layer.setStyle({ weight: 2.5, color: '#222', fillOpacity: 0.95 });
+        
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { 
+            layer.bringToFront(); 
+        }
+        // Assurer que l'eau reste visible si nécessaire (optionnel)
+        // if(layerEau) layerEau.bringToFront(); 
+        
+        info.update(layer.feature.properties);
+    }
+
+    function resetHighlight(e) { 
+        const layer = e.target; 
+        // Réinitialise au style défini par l'année correspondante (ici on simplifie par style global)
+        layer.setStyle(style(layer.feature)); 
+        info.update(); 
+    }
+
+    function zoomToFeature(e) { 
+        map.fitBounds(e.target.getBounds()); 
+    }
+
+    function onEachFeature(feature, layer) { 
+        layer.on({ 
+            mouseover: highlightFeature, 
+            mouseout: resetHighlight, 
+            click: zoomToFeature 
+        }); 
+    }
+
+
+    // --- 5. CHARGEMENT DES COUCHES TEMPORELLES ---
+
+    // Filtre de validité des données
+    function filterData(feature) {
+        return feature.properties.PCT_EXPO !== null;
+    }
+
+    // Initialisation des objets GeoJSON vides si nécessaire
+    try {
+        if (typeof INONDATION1999 === 'undefined') INONDATION1999 = {"type":"FeatureCollection","features":[]};
+        if (typeof INONDATION2008 === 'undefined') INONDATION2008 = {"type":"FeatureCollection","features":[]};
+        if (typeof INONDATION2017 === 'undefined') INONDATION2017 = {"type":"FeatureCollection","features":[]};
+    } catch(e) { console.error("Erreur chargement JSON", e); }
+
+    const layer1999 = L.geoJSON(INONDATION1999, { style: style, onEachFeature: onEachFeature, filter: filterData });
+    const layer2008 = L.geoJSON(INONDATION2008, { style: style, onEachFeature: onEachFeature, filter: filterData });
+    const layer2017 = L.geoJSON(INONDATION2017, { style: style, onEachFeature: onEachFeature, filter: filterData });
+
+    // Ajout par défaut de la couche la plus récente
+    layer2017.addTo(map);
+
+
+    // --- 6. CONTRÔLE DES COUCHES (LAYER CONTROL) ---
+    
+    const baseMaps = {
+        "ESRI Satellite": basemapSat,
+        "Plan Gris (CartoDB)": basemapGris
+    };
+    
+    const overlayMaps = {
+        "Année 1999": layer1999,
+        "Année 2008": layer2008,
+        "Année 2017": layer2017
+    };
+    
+    if (layerEau) overlayMaps["Réseau Hydrographique"] = layerEau;
+
+    L.control.layers(baseMaps, overlayMaps, { collapsed: false, autoZIndex: false }).addTo(map);
+
+    // Logique d'exclusion mutuelle des couches temporelles
+    map.on('overlayadd', function(e) {
+        const years = [layer1999, layer2008, layer2017];
+        const addedLayer = e.layer;
+        
+        // Si la couche ajoutée est une année, on retire les autres
+        if (years.includes(addedLayer)) {
+            years.forEach(function(yearLayer) {
+                if (yearLayer !== addedLayer && map.hasLayer(yearLayer)) {
+                    // Timeout nécessaire pour éviter les conflits d'événements Leaflet
+                    setTimeout(() => map.removeLayer(yearLayer), 10);
+                }
+            });
+        }
+    });
+
+
+    // --- 7. LÉGENDE STATIQUE ---
+    const legend = L.control({position: 'bottomleft'});
+    
+    legend.onAdd = function (map) {
+        const div = L.DomUtil.create('div', 'info legend');
+        const grades = [0, 0.02, 0.05, 0.10, 0.15, 0.25, 0.50];
+
+        let content = '<h4>Part Pop. Exposée</h4>';
+        
+        for (let i = 0; i < grades.length; i++) {
+            const label = (grades[i] * 100) + '%';
+            const nextLabel = grades[i + 1] ? '&ndash;' + (grades[i + 1] * 100) + '%' : '+';
+            
+            content += `
+                <i style="background:${getColor(grades[i] + 0.0001)}"></i> 
+                ${label} ${grades[i + 1] ? nextLabel : '+'} <br>
+            `;
+        }
+        content += '<br><i style="background:#4FC3F7; height:3px; margin-top:8px; border:none;"></i> Cours d\'eau';
+        div.innerHTML = content;
+        return div;
+    };
+    legend.addTo(map);
+
+</script>
+
+</body>
+</html>
