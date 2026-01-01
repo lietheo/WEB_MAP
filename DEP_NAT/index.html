@@ -206,27 +206,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+      
         // ==========================================
-        // 1. DONNÉES (DATASET)
-        // ==========================================
-        // Note: Idéalement, ces données devraient être chargées via le fichier externe CENTROIDE.json
-        // inclus en bas de page. Cette variable sert d'exemple ou de fallback.
-        var centroide = {
-            "type": "FeatureCollection",
-            "features": [
-                { "type": "Feature", "properties": { "fid": 1.0, "nom": "ARDECHE", "code_insee": "07", "Seveso 202": 4, "Risque_ind": 4, "Radon": 0, "Inondation": 152, "Mouvement": 204, "Séisme": 335, "Nucléaire": 22, "Naturelles": 3112 }, "geometry": { "type": "Point", "coordinates": [ 4.424661523677651, 44.751832577362698 ] } },
-                { "type": "Feature", "properties": { "fid": 2.0, "nom": "PUY-DE-DOME", "code_insee": "63", "Seveso 202": 9, "Risque_ind": 463, "Radon": 463, "Inondation": 463, "Mouvement": 463, "Séisme": 463, "Nucléaire": 0, "Naturelles": 3764 }, "geometry": { "type": "Point", "coordinates": [ 3.140918707559541, 45.725691143174544 ] } },
-                { "type": "Feature", "properties": { "fid": 3.0, "nom": "SEINE-MARITIME", "code_insee": "76", "Seveso 202": 73, "Risque_ind": 87, "Radon": 0, "Inondation": 29, "Mouvement": 664, "Séisme": 0, "Nucléaire": 206, "Naturelles": 4602 }, "geometry": { "type": "Point", "coordinates": [ 1.027507186328194, 49.655057486901228 ] } },
-                { "type": "Feature", "properties": { "fid": 4.0, "nom": "CHARENTE-MARITIME", "code_insee": "17", "Seveso 202": 14, "Risque_ind": 0, "Radon": 0, "Inondation": 100, "Mouvement": 416, "Séisme": 462, "Nucléaire": 1, "Naturelles": 5813 }, "geometry": { "type": "Point", "coordinates": [ -0.677378662531363, 45.773811879516565 ] } },
-                { "type": "Feature", "properties": { "fid": 5.0, "nom": "PARIS", "code_insee": "75", "Seveso 202": 0, "Risque_ind": 0, "Radon": 0, "Inondation": 1, "Mouvement": 0, "Séisme": 0, "Nucléaire": 0, "Naturelles": 22 }, "geometry": { "type": "Point", "coordinates": [ 2.342927113962042, 48.856618508065509 ] } },
-                { "type": "Feature", "properties": { "fid": 6.0, "nom": "SARTHE", "code_insee": "72", "Seveso 202": 10, "Risque_ind": 5, "Radon": 49, "Inondation": 0, "Mouvement": 7, "Séisme": 246, "Nucléaire": 0, "Naturelles": 2279 }, "geometry": { "type": "Point", "coordinates": [ 0.222374413411394, 47.994529325689705 ] } },
-                { "type": "Feature", "properties": { "fid": 13.0, "nom": "DORDOGNE", "code_insee": "24", "Seveso 202": 9, "Risque_ind": 10, "Radon": 54, "Inondation": 232, "Mouvement": 500, "Séisme": 83, "Nucléaire": 0, "Naturelles": 6068 }, "geometry": { "type": "Point", "coordinates": [ 0.741306898134572, 45.104264819944262 ] } },
-                { "type": "Feature", "properties": { "fid": 14.0, "nom": "RHONE", "code_insee": "69", "Seveso 202": 45, "Risque_ind": 25, "Radon": 266, "Inondation": 227, "Mouvement": 214, "Séisme": 266, "Nucléaire": 5, "Naturelles": 4241 }, "geometry": { "type": "Point", "coordinates": [ 4.64139967284635, 45.870401532469806 ] } }
-            ]
-        };
-
-        // ==========================================
-        // 2. CONFIGURATION LOGIQUE
+        // CONFIGURATION LOGIQUE
         // ==========================================
         const CONFIG = {
             'inondation': { 
@@ -267,7 +249,7 @@
         let activeRiskKey = 'inondation';
 
         // ==========================================
-        // 3. FONCTIONS PRINCIPALES
+        // FONCTIONS PRINCIPALES
         // ==========================================
 
         /**
@@ -369,7 +351,7 @@
         }
 
         // ==========================================
-        // 4. FONCTIONS UTILITAIRES
+        // FONCTIONS UTILITAIRES
         // ==========================================
 
         /**
@@ -434,4 +416,5 @@
     <script src="CENTROIDE.json"></script> 
 
 </body>
+
 </html>
