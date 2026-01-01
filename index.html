@@ -682,10 +682,12 @@
                     // --- Graphique Nucléaire ---
                     if (key === 'nucleaire') {
                         html += `
-                        <div style="${cardStyle}">
+                        <div style="${cardStyle}; min-height: 520px;"> 
                             <h3 style="font-family:'Space Grotesk'; font-size:1rem; margin:0 0 10px 0; color:${d.color}">Répartition INES</h3>
-                            <div style="position: relative; width: 100%; height: 440px; overflow: hidden; border-radius: 8px;">
-                                <iframe src="GRAPH/nucleaire.html" style="position: absolute; top: -50px; left: 0; width: 100%; height: calc(100% + 50px); border:none;"></iframe>
+                            <div style="position: relative; width: 100%; height: 480px; overflow: hidden; border-radius: 8px;">
+                                <iframe src="GRAPH/nucleaire.html" 
+                                        style="position: absolute; top: 5px; left: 0; width: 100%; height: 100%; border:none;">
+                                </iframe>
                             </div>
                         </div>`;
                     }
