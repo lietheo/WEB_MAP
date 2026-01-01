@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Distribution INES - 9 Niveaux complets</title>
+    <style>
+        /* Configuration de la mise en page globale */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: transparent; 
+            margin: 0;
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Conteneur principal du widget */
+        .dashboard-card {
+            background: white;
+            width: 380px; 
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ines-list { list-style: none; padding: 0; margin: 0; }
+
+        /* Structure en grille pour l'alignement des colonnes */
+        .ines-item {
+            display: grid;
+            grid-template-columns: 115px 45px 1fr; 
+            align-items: center;
+            margin-bottom: 2px;
+            padding: 4px 8px; 
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ines-item:hover { background-color: #f0f4f8; }
+
+        /* Zone d'affichage des détails au survol */
+        #info-bar {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #1e293b;
+            color: #fff;
+            border-radius: 8px;
+            min-height: 80px; 
+            font-size: 11px;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-title {
+            color: #facc15;
+            font-weight: bold;
+            margin-bottom: 3px;
+            display: block;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        /* Styles des badges et indicateurs de niveau */
+        .level-label { display: flex; align-items: center; gap: 8px; }
+        .level-tag {
+            font-size: 9px; font-weight: 800; color: white;
+            background-color: var(--c);
+            padding: 2px 0; border-radius: 3px; width: 20px; text-align: center;
+        }
+        .level-desc { color: #475569; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .level-count { text-align: right; padding-right: 12px; font-weight: 700; color: #1e293b; font-size: 11px; }
+
+        /* Conteneurs des barres de progression */
+        .bar-wrapper {
+            height: 7px; 
+            background-color: #f1f5f9;
+            border-radius: 10px; 
+            display: flex; align-items: center;
+            overflow: hidden; 
+        }
+        .bar {
+            height: 100%; border-radius: 10px; 
+            width: var(--w); background-color: var(--c); opacity: 0.9;
+        }
+
+        /* Définition des variables de couleurs par catégorie */
+        .cat-red    { --c: #ef4444; }
+        .cat-orange { --c: #f59e0b; }
+        .cat-green  { --c: #10b981; }
+        .cat-grey   { --c: #94a3b8; }
+
+        .separator { margin-top: 5px; padding-top: 5px; border-top: 1px dashed #e2e8f0; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-card">
+        <ul class="ines-list">
+            <li class="ines-item cat-red" onmouseover="showInfo('Niveau 7 : Accident Majeur', 'Rejet majeur : effets étendus sur la santé et l\'environnement. Exemple : Tchernobyl, Fukushima.')">
+                <div class="level-label"><span class="level-tag">N7</span> <span class="level-desc">Majeur</span></div>
+                <div class="level-count">1</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 5%"></div></div>
+            </li>
+            
+            <li class="ines-item cat-red" onmouseover="showInfo('Niveau 6 : Accident Grave', 'Rejet important susceptible d\'exiger l\'application intégrale des plans d\'urgence. Exemple : Kychtym.')">
+                <div class="level-label"><span class="level-tag">N6</span> <span class="level-desc">Grave</span></div>
+                <div class="level-count">1</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 5%"></div></div>
+            </li>
+
+            <li class="ines-item cat-red" onmouseover="showInfo('Niveau 5 : Accident', 'Rejet limité : application partielle des mesures d\'urgence. Dommages graves au cœur du réacteur.')">
+                <div class="level-label"><span class="level-tag">N5</span> <span class="level-desc">Accident</span></div>
+                <div class="level-count">1</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 5%"></div></div>
+            </li>
+
+            <li class="ines-item cat-red" onmouseover="showInfo('Niveau 4 : Accident (local)', 'Dommages mineurs au cœur ou exposition d\'un travailleur à une dose mortelle. Rejet mineur sans risque extérieur.')">
+                <div class="level-label"><span class="level-tag">N4</span> <span class="level-desc">Accident</span></div>
+                <div class="level-count">1</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 5%"></div></div>
+            </li>
+
+            <li class="ines-item cat-orange" onmouseover="showInfo('Niveau 3 : Incident Grave', 'Exposition > 10 fois la limite annuelle pour un travailleur. Rejet très faible.')">
+                <div class="level-label"><span class="level-tag">N3</span> <span class="level-desc">Inc. Grave</span></div>
+                <div class="level-count">1</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 5%"></div></div>
+            </li>
+
+            <li class="ines-item cat-orange" onmouseover="showInfo('Niveau 2 : Incident', 'Défaillance technique importante ou exposition d\'un travailleur > limite annuelle.')">
+                <div class="level-label"><span class="level-tag">N2</span> <span class="level-desc">Incident</span></div>
+                <div class="level-count">44</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 25%"></div></div>
+            </li>
+
+            <li class="ines-item cat-orange" onmouseover="showInfo('Niveau 1 : Anomalie', 'Sortie du régime de fonctionnement autorisé. Conséquences nulles pour l\'environnement.')">
+                <div class="level-label"><span class="level-tag">N1</span> <span class="level-desc">Anomalie</span></div>
+                <div class="level-count">2833</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 85%"></div></div>
+            </li>
+
+            <li class="ines-item cat-green separator" onmouseover="showInfo('Niveau 0 : Écart', 'Événement sans importance pour la sûreté nucléaire.')">
+                <div class="level-label"><span class="level-tag">N0</span> <span class="level-desc">Écart</span></div>
+                <div class="level-count">123</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 15%"></div></div>
+            </li>
+
+            <li class="ines-item cat-grey" onmouseover="showInfo('Hors Échelle', 'Événement non pertinent vis-à-vis de l\'échelle INES.')">
+                <div class="level-label"><span class="level-tag">-</span> <span class="level-desc">H. Échelle</span></div>
+                <div class="level-count">77</div>
+                <div class="bar-wrapper"><div class="bar" style="--w: 10%"></div></div>
+            </li>
+        </ul>
+
+        <div id="info-bar">
+            <span id="info-title" class="info-title">Échelle INES</span>
+            <span id="info-text">Survolez un niveau pour voir les détails.</span>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Met à jour dynamiquement le contenu de la barre d'information.
+         * @param {string} title - Le titre du niveau sélectionné.
+         * @param {string} text - La description détaillée.
+         */
+        function showInfo(title, text) {
+            document.getElementById('info-title').innerText = title;
+            document.getElementById('info-text').innerText = text;
+        }
+    </script>
+</body>
+</html>

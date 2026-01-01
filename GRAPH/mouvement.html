@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Donut Chart - Pur</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; display: flex; justify-content: center;
+            align-items: center; height: 100vh; background-color: #fafafa;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="vis"></div>
+
+    <script type="text/javascript">
+        var data = [
+            // STAT
+            {"Risque": "Effondrement", "Proportion (%)": 39},
+            {"Risque": "Glissement", "Proportion (%)": 26},
+            {"Risque": "Chute de blocs", "Proportion (%)": 23},
+            {"Risque": "Érosion de berges", "Proportion (%)": 7},
+            {"Risque": "Coulée", "Proportion (%)": 5}
+        ];
+
+        var spec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "width": 320,
+            "height": 320,
+            "data": {"values": data},
+            "background": "transparent",
+            "transform": [
+                {"calculate": "datum['Proportion (%)'] + '%'", "as": "label_percent"}
+            ],
+            "encoding": {
+                "theta": {"field": "Proportion (%)", "type": "quantitative", "stack": true},
+                "color": {
+                    "field": "Proportion (%)",
+                    "type": "quantitative",
+                    "scale": {"range": ["#D7CCC8", "#3E2723"]},
+                    "legend": null
+                },
+                "order": {"field": "Proportion (%)", "sort": "descending"},
+                "tooltip": [
+                    {"field": "Risque", "type": "nominal", "title": "Nature"},
+                    {"field": "label_percent", "type": "nominal", "title": "Part"}
+                ]
+            },
+            "layer": [
+                {
+                    // LE DONUT
+                    "mark": {
+                        "type": "arc", 
+                        "outerRadius": 150, 
+                        "innerRadius": 90, 
+                        "stroke": "#fff", 
+                        "strokeWidth": 2,
+                        "cursor": "pointer"
+                    }
+                },
+                {
+                    // LES % SUR LES SEGMENTS
+                    "mark": {
+                        "type": "text", 
+                        "radius": 120, 
+                        "fontSize": 14, 
+                        "fontWeight": "bold",
+                        "interactive": false 
+                    },
+                    "encoding": {
+                        "text": {"field": "label_percent"},
+                        "color": {
+                            "condition": {"test": "datum['Proportion (%)'] < 15", "value": "#3E2723"}, 
+                            "value": "white"
+                        }
+                    }
+                }
+            ],
+            "config": {
+                "view": {"stroke": "transparent"},
+                "arc": {"padAngle": 0.02}
+            }
+        };
+
+        vegaEmbed('#vis', spec, {actions: false}).catch(console.error);
+    </script>
+</body>
+</html>
