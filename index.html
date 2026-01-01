@@ -590,7 +590,7 @@
 }
     };
 
-// --- 2. NAVIGATION (CORRIGÉE : CARTE NATURELLE GLOBALE) ---
+// --- 2. NAVIGATION---
     function switchView(name) {
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('visible'));
         const view = document.getElementById('view-' + name);
@@ -603,14 +603,14 @@
         document.getElementById('external-frame-container').style.display = 'block';
         document.getElementById('map').style.display = 'none'; 
         
-        // CORRECTION ICI : On pointe vers DEP_NAT
+        // On pointe vers DEP_NAT
         let url = (mode === 'naturel') ? "DEP_NAT/index.html" : "DEP_TECH/index.html";
         
         if (riskType) url += "#" + riskType;
         iframe.src = url;
     }
 
-   // --- 3. OUVERTURE MODALE (AVEC GRAPHE A DROITE DU TEXTE) ---
+   // --- 3. OUVERTURE MODALE ---
     function openModal(key) {
         const d = detailsContent[key];
         if (!d) return;
@@ -637,7 +637,7 @@
         // --- CAS 2 : LES FRISES & GRAPHES (Mouvement, Nucléaire, Industriel, etc.) ---
         else if (['mouvement', 'nucleaire', 'radon', 'industriel', 'seisme'].includes(key)) {
             
-            // On vérifie si ce risque possède un graphe à afficher
+            // Vérifie si ce risque possède un graphe à afficher
             const hasGraph = ['mouvement', 'nucleaire', 'industriel'].includes(key);
 
             // 1. BLOC DU HAUT (TEXTE + GRAPHE CÔTE À CÔTE)
@@ -650,7 +650,7 @@
                 if (hasGraph) {
                     html += `<div style="width: 500px; flex-shrink: 0;">`; // Largeur augmentée à 500px
                     
-                    // NOUVEAU STYLE : Centre le contenu et cache les dépassements
+                    // Centre le contenu et cache les dépassements
                     const cardStyle = `
                         background: #fff; 
                         padding: 15px; 
@@ -663,7 +663,7 @@
                         overflow: hidden;           /* Coupe tout ce qui dépasse */
                     `;
 
-                    // --- Graphique Mouvement (VERSION FINALISÉE) ---
+                    // --- Graphique Mouvement---
                         if (key === 'mouvement') {
                             html += `
                             <div style="${cardStyle}; min-height: 400px; justify-content: center;">
@@ -868,7 +868,7 @@
         }, 300);
     }
 
-    // BONUS : Fermer en cliquant à l'extérieur (sur le fond gris)
+    // Fermer en cliquant à l'extérieur (sur le fond gris)
     document.getElementById('view-detail').addEventListener('click', function(e) {
         if (e.target === this) {
             closeModal();
