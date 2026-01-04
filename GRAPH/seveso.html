@@ -22,6 +22,7 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.15); /* Ombre plus nette */
             box-sizing: border-box;
             border-top: 4px solid #212121; /* Petite touche "Design" en haut */
+            position: relative; /* Pour le logo info */
         }
 
         /* --- TYPOGRAPHIE --- */
@@ -139,24 +140,40 @@
         }
 
         /* --- PALETTE DE GRIS --- */
-        
-        /* Astuce : Plus le chiffre est haut, plus le gris est FONCÉ.
-           == hiérarchie visuelle naturelle.
-        */
-
-        /* Secteurs : Dégradé du Noir vers le Gris Clair */
         .sec-1 { --c: #212121; } /* Noir Anthracite (Presque noir) */
         .sec-2 { --c: #424242; } /* Gris Foncé */
         .sec-3 { --c: #616161; } /* Gris Moyen-Foncé */
         .sec-4 { --c: #757575; } /* Gris Moyen */
         .sec-5 { --c: #9e9e9e; } /* Gris Clair */
-
-        /* Un gris unifié "Acier" pour distinguer du classement */
         .cons-style { --c: #546e7a; } /* Gris légèrement bleuté "Slate" ou rester neutre #616161 */
-        
-        /* Icônes typographiques */
         .icon-symbol { font-family: monospace; font-weight: bold; color: #bdbdbd; font-size: 12px;}
 
+        /* --- Logo source --- */
+        #info-logo {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 10px;
+            background: #eee;
+            border-radius: 50%;
+            width: 14px; height: 14px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            color: #555;
+            font-weight: bold;
+        }
+        #info-logo:hover::after {
+            content: "Source : ARIA, Ministère Développement Durable";
+            position: absolute;
+            bottom: 20px;
+            right: 0;
+            font-size: 9px;
+            color: #fff;
+            background: rgba(0,0,0,0.8);
+            padding: 3px 6px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -258,6 +275,9 @@
                 <div class="bar-container"><div class="bar" style="--w: 27%"></div></div>
             </li>
         </ul>
+
+        <!-- Petit logo info source -->
+        <div id="info-logo">i</div>
     </div>
 
 </body>
