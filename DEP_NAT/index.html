@@ -14,30 +14,23 @@
            1. CHARTE GRAPHIQUE & VARIABLES
            ========================================== */
         :root {
-            /* Couleurs structurelles */
             --primary-text: #2c3e50;
             --secondary-text: #7f8c8d;
             --bg-color: #f0f2f5;
             --accent-color: #3498db;
             
-            /* Palette Thématique : Risques Naturels */
-            --col-inondation: #5B7687; /* Bleu Gris (Eau) */
-            --col-radon: #917180;      /* Violet (Gaz) */
-            --col-mouvement: #C0956D;  /* Ocre (Terre) */
-            --col-seisme: #CC7367;     /* Rouge Terre (Fissure) */
-            --col-arrete: #4169E1;     /* Bleu Royal (Administratif) */
+            --col-inondation: #5B7687; 
+            --col-radon: #917180;      
+            --col-mouvement: #C0956D;  
+            --col-seisme: #CC7367;     
+            --col-arrete: #4169E1;     
         }
 
-        /* Reset CSS */
         body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; display: flex; height: 100vh; overflow: hidden; background: var(--bg-color); color: #333; }
         * { box-sizing: border-box; }
 
-        /* ==========================================
-           2. LAYOUT & SIDEBAR
-           ========================================== */
         #layout-container { display: flex; width: 100%; height: 100%; }
 
-        /* Panneau Latéral */
         .sidebar {
             width: 380px; 
             background: white; 
@@ -50,7 +43,6 @@
             flex-shrink: 0; 
         }
 
-        /* En-tête */
         .sidebar-header { margin-bottom: 30px; }
         .sidebar-title {
             font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--primary-text);
@@ -58,7 +50,6 @@
         }
         .sidebar-subtitle { font-size: 0.95rem; color: var(--secondary-text); line-height: 1.5; }
 
-        /* --- Composant : Menu de Sélection --- */
         .risk-selector { display: flex; flex-direction: column; gap: 12px; }
         
         .risk-item {
@@ -67,15 +58,13 @@
             transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
-        /* États Interactifs */
         .risk-item:hover { background: #eef2f5; transform: translateX(5px); }
         .risk-item.active { 
             background: white; 
-            border-color: var(--accent-color); /* Fallback */
+            border-color: var(--accent-color);
             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15); 
         }
 
-        /* Styles Icônes */
         .risk-icon { 
             width: 36px; height: 36px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center;
@@ -84,14 +73,12 @@
         }
         .risk-name { font-weight: 600; color: var(--primary-text); font-size: 0.95rem; }
 
-        /* Assignation des couleurs aux icônes */
         .risk-item[data-risk="inondation"] .risk-icon { background: var(--col-inondation); }
         .risk-item[data-risk="radon"] .risk-icon { background: var(--col-radon); }
         .risk-item[data-risk="mouvement"] .risk-icon { background: var(--col-mouvement); }
         .risk-item[data-risk="seisme"] .risk-icon { background: var(--col-seisme); }
         .risk-item[data-risk="arrete"] .risk-icon { background: var(--col-arrete); }
 
-        /* --- Composant : Légende --- */
         .legend-container { 
             margin-top: 40px; 
             padding-top: 20px; 
@@ -107,7 +94,6 @@
             border: 1px solid rgba(0,0,0,0.1); flex-shrink: 0;
         }
 
-        /* --- Composant : Footer / Accordéon --- */
         .details-wrapper { margin-top: auto; padding-top: 20px; }
         
         .details-toggle {
@@ -125,39 +111,24 @@
             font-size: 0.85rem; color: #666; margin-top: 10px; line-height: 1.6;
             border: 1px solid #eee;
         }
-        .details-panel.open { display: block; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 
-        /* ==========================================
-           3. CARTE & POPUPS
-           ========================================== */
         #map { flex: 1; height: 100%; z-index: 1; background: #e5e9ec; }
 
-        /* Customisation Leaflet Popups */
-        .leaflet-popup-content-wrapper { 
-            border-radius: 12px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important; padding: 0 !important; overflow: hidden; 
-        }
+        /* Custom Popups */
+        .leaflet-popup-content-wrapper { border-radius: 12px !important; padding: 0 !important; overflow: hidden; }
         .leaflet-popup-content { margin: 0 !important; width: 260px !important; }
-        .leaflet-container a.leaflet-popup-close-button { color: white !important; top: 10px; right: 10px; font-size: 18px; }
-
-        .custom-popup-header { background: #333; color: white; padding: 15px; font-family: 'Montserrat'; font-size: 1rem; font-weight: 700; }
+        .custom-popup-header { color: white; padding: 15px; font-family: 'Montserrat'; font-weight: 700; }
         .custom-popup-body { padding: 15px; background: white; }
-        .popup-stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #555; }
-        .popup-stat-val { font-weight: 700; color: #222; }
-
+        .popup-stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div id="layout-container">
-        
         <div class="sidebar">
-            
             <div class="sidebar-header">
                 <div class="sidebar-title">Risques Naturels</div>
-                <div class="sidebar-subtitle">
-                    Visualisez l'intensité des aléas par département (nombre de communes soumises au risque).
-                </div>
+                <div class="sidebar-subtitle">Visualisez l'intensité des aléas par département.</div>
             </div>
 
             <div class="risk-selector">
@@ -192,197 +163,125 @@
                 </div>
                 <div class="details-panel" id="details-text">
                     <p><strong>Source :</strong> Observatoire des Territoires (2025).</p>
-                    <p>Les cercles représentent le nombre absolu de communes identifiées comme étant "à risque" au sein de chaque département.</p>
-                    <p>Plus le cercle est grand, plus le nombre de communes concernées est important.</p>
+                    <p>Les cercles représentent le volume de données (communes ou arrêtés) par département.</p>
                 </div>
             </div>
-
         </div>
 
         <div id="map"></div>
-
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="CENTROIDE.json"></script> 
 
     <script>
-      
         // ==========================================
         // CONFIGURATION LOGIQUE
         // ==========================================
         const CONFIG = {
             'inondation': { 
-                label: 'Inondation', 
-                color: '#5B7687', 
-                field: 'Inondation', // Mapping champ JSON
-                max: 600 // Valeur de référence pour taille max
+                label: 'Inondation', color: '#5B7687', field: 'Inondation', max: 600, 
+                unit: 'Communes' 
             },
             'seisme': { 
-                label: 'Risque Sismique', 
-                color: '#CC7367', 
-                field: 'Séisme', 
-                max: 700 
+                label: 'Risque Sismique', color: '#CC7367', field: 'Séisme', max: 700, 
+                unit: 'Communes' 
             },
             'mouvement': { 
-                label: 'Mouvements Terrain', 
-                color: '#C0956D', 
-                field: 'Mouvement', 
-                max: 700 
+                label: 'Mouvements Terrain', color: '#C0956D', field: 'Mouvement', max: 700, 
+                unit: 'Communes' 
             },
             'radon': { 
-                label: 'Radon', 
-                color: '#917180', 
-                field: 'Radon', 
-                max: 500 
+                label: 'Radon', color: '#917180', field: 'Radon', max: 500, 
+                unit: 'Communes' 
             },
             'arrete': { 
-                label: 'Arrêtés Cat. Nat.', 
-                color: '#4169E1', 
-                field: 'Naturelles', 
-                max: 8500 
+                label: 'Arrêtés Cat. Nat.', color: '#4169E1', field: 'Naturelles', max: 8500, 
+                unit: 'Arrêtés' 
             }
         };
 
-        // Variables Globales
         let map;
         let currentGeoJsonLayer = null;
-        let activeRiskKey = 'inondation';
 
-        // ==========================================
-        // FONCTIONS PRINCIPALES
-        // ==========================================
-
-        /**
-         * Initialisation de la carte Leaflet et chargement par défaut
-         */
         function initMap() {
-            // Fond de carte clair (CartoDB Positron)
             map = L.map('map', { zoomControl: false }).setView([46.6, 2.5], 6);
-            
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO',
-                maxZoom: 19
+                attribution: '&copy; CARTO'
             }).addTo(map);
-            
             L.control.zoom({ position: 'topright' }).addTo(map);
 
-            // Charger le premier risque au démarrage
             loadRiskLayer('inondation');
         }
 
-        /**
-         * Gestion du changement de risque via l'interface
-         */
         function changeRisk(riskKey) {
-            activeRiskKey = riskKey;
-
-            // Mise à jour visuelle des boutons (Classe active)
             document.querySelectorAll('.risk-item').forEach(el => el.classList.remove('active'));
             document.querySelector(`.risk-item[data-risk="${riskKey}"]`).classList.add('active');
-
-            // Recharger la carte et la légende
             loadRiskLayer(riskKey);
         }
 
-        /**
-         * Logique Core : Affichage des données GeoJSON
-         */
         function loadRiskLayer(key) {
-            // Supprimer l'ancienne couche si elle existe pour éviter les superpositions
             if (currentGeoJsonLayer) map.removeLayer(currentGeoJsonLayer);
-
             const conf = CONFIG[key];
 
             currentGeoJsonLayer = L.geoJSON(centroide, {
-                // Transformation Point -> Cercle proportionnel
                 pointToLayer: function(feature, latlng) {
                     const val = feature.properties[conf.field] || 0;
                     const radius = calculateRadius(val, conf.max);
-                    
-                    if(radius <= 0) return null; // Filtrage des valeurs nulles
+                    if(radius <= 0) return null;
 
                     return L.circleMarker(latlng, {
                         radius: radius,
                         fillColor: conf.color,
                         color: 'white',
                         weight: 1,
-                        opacity: 1,
                         fillOpacity: 0.8
                     });
                 },
-                // Ajout des Popups et événements
                 onEachFeature: function(feature, layer) {
-                    const p = feature.properties;
-                    const val = p[conf.field] || 0;
-
-                    // Template HTML de la Popup
+                    const val = feature.properties[conf.field] || 0;
                     const popupContent = `
                         <div class="custom-popup-header" style="background:${conf.color}">
-                            ${p.nom} (${p.code_insee})
+                            ${feature.properties.nom}
                         </div>
                         <div class="custom-popup-body">
                             <div class="popup-stat-row">
-                                <span>Type de risque :</span> <strong>${conf.label}</strong>
-                            </div>
-                            <div class="popup-stat-row">
-                                <span>Communes touchées :</span> <span class="popup-stat-val" style="color:${conf.color}">${val}</span>
+                                <span>${conf.label} :</span> 
+                                <strong style="color:${conf.color}">${val.toLocaleString()} ${conf.unit}</strong>
                             </div>
                         </div>
                     `;
                     layer.bindPopup(popupContent);
-
-                    // Interactions Hover (Survol souris)
-                    layer.on({
-                        mouseover: function(e) {
-                            var l = e.target;
-                            l.setStyle({ weight: 3, color: '#333', fillOpacity: 1 });
-                            l.openPopup();
-                        },
-                        mouseout: function(e) {
-                            var l = e.target;
-                            l.setStyle({ weight: 1, color: 'white', fillOpacity: 0.8 });
-                            l.closePopup();
-                        }
-                    });
+                    layer.on('mouseover', function(e) { e.target.openPopup(); });
+                    layer.on('mouseout', function(e) { e.target.closePopup(); });
                 }
             }).addTo(map);
 
             updateLegend(key);
         }
 
-        // ==========================================
-        // FONCTIONS UTILITAIRES
-        // ==========================================
-
-        /**
-         * Calcule le rayon du cercle en pixels (Mapping linéaire)
-         */
         function calculateRadius(val, max) {
             if(!val) return 0;
-            const minPx = 4;
+            // Utilisation d'une racine carrée pour que la SURFACE soit proportionnelle
+            // (indispensable pour les gros chiffres comme 8500 arrêtés)
             const maxPx = 35;
-            // Formule de proportionnalité simple
-            let r = minPx + (val / max) * (maxPx - minPx);
-            return r;
+            return Math.sqrt(val / max) * maxPx + 2;
         }
 
-        /**
-         * Génération dynamique de la légende HTML
-         */
         function updateLegend(key) {
             const conf = CONFIG[key];
             const max = conf.max;
-            // Création de 3 paliers pour la légende
-            const steps = [Math.round(max), Math.round(max/2), Math.round(max/10)];
+            const unit = conf.unit; // On récupère "Communes" ou "Arrêtés"
             
+            const steps = [max, Math.round(max/2), Math.round(max/10)];
             let html = `<div class="legend-title">Légende : ${conf.label}</div>`;
             
             steps.forEach(val => {
-                const r = calculateRadius(val, max) * 2; // Diamètre
+                const r = calculateRadius(val, max) * 2;
                 html += `
                     <div class="legend-row">
                         <span class="legend-circle" style="width:${r}px; height:${r}px; background:${conf.color}; opacity:0.8;"></span>
-                        <span>~ ${val} Communes</span>
+                        <span>~ ${val.toLocaleString()} ${unit}</span>
                     </div>
                 `;
             });
@@ -390,32 +289,12 @@
             document.getElementById('legend-content').innerHTML = html;
         }
 
-        /**
-         * Gestion de l'affichage du panneau d'info (Accordéon)
-         */
         function toggleDetails() {
             const panel = document.getElementById('details-text');
-            const icon = document.getElementById('chevron-icon');
-            
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            } else {
-                panel.style.display = "block";
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            }
+            panel.style.display = (panel.style.display === "block") ? "none" : "block";
         }
 
-        // Démarrage
         window.onload = initMap;
-
     </script>
-    
-    <script src="CENTROIDE.json"></script> 
-
 </body>
-
 </html>
-
