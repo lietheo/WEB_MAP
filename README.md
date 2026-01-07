@@ -16,7 +16,7 @@ L'**Observatoire National des Risques (ONR)** est une plateforme web interactive
 
 ### 1. Cartes Synthétiques de la Prévention
 * **Méthodologie :** Utilisation de **centroïdes départementaux**.
-* **Indicateur :** La taille du centroïde est **proportionnelle au nombre de communes du département** ayant mis en place un Plan de Prévention des Risques (PPR ou PPRT).
+* **Indicateur :** La taille du centroïde est **proportionnelle au nombre de communes du département** ayant mis en place un Plan de Prévention des Risques (PPR ou PPRT) ou le nombre de site/arrêté.
 
 ### 2. Pages Thématiques Détaillées
 Chaque risque (Inondation, Séisme, Nucléaire, Mouvements de Terrain, Radon, Industriel) est documenté par :
@@ -25,8 +25,9 @@ Chaque risque (Inondation, Séisme, Nucléaire, Mouvements de Terrain, Radon, In
 * **Analyses Statistiques :** Graphiques de répartition (ex: Échelle INES, Accidentologie par secteur).
 
 ## Métadonnées et Sûreté des Données
-Les données sont issues de sources officielles (Sisfrance, ARIA, Géorisques, IRSN) et traitées pour garantir une précision géographique optimale :
+Les données sont issues de sources officielles (Sisfrance, ARIA, Géorisques, IRSN, BD TOPO etc...) et traitées pour garantir une précision géographique optimale :
 * **Projection :** WGS84 (EPSG:4326).
 
 * **Processus :** Nettoyage, harmonisation des champs et jointures aux référentiels.
+
 
