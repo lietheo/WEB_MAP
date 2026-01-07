@@ -5,7 +5,7 @@
 </p>
 
 ## Vue d'ensemble du Projet
-L'**Observatoire National des Risques (ONR)** est une plateforme web interactive et pédagogique conçue pour centraliser et visualiser l'information sur les risques majeurs (naturels et technologiques) en France. Ce projet fournit aux citoyens, aux collectivités et aux chercheurs un outil d'exploration des données de planification et de prévention via une approche **Story Map**.
+L'**Observatoire National des Risques (ONR)** est une plateforme web interactive et pédagogique conçue pour centraliser et visualiser l'information sur les risques majeurs (naturels et technologiques) en France. Ce projet fournit aux citoyens, aux collectivités et aux chercheurs un outil d'exploration des données de planification et de prévention.
 
 ## Objectifs
 * **Pédagogie Citoyenne :** Rendre les informations complexes (PPR, PPRT, Seveso, Radon, Inondation) accessibles.
@@ -29,3 +29,4 @@ Les données sont issues de sources officielles (Sisfrance, ARIA, Géorisques, I
 * **Projection :** WGS84 (EPSG:4326).
 
 * **Processus :** Nettoyage, harmonisation des champs et jointures aux référentiels.
+
